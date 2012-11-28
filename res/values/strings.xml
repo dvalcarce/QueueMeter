@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Queue Meter</string>
+    <string name="menu_exit">Salir</string>
+    <string name="menu_settings">Opciones</string>
+    <string name="menu_reset">Reset</string>
+    <string name="settings_title">Opciones</string>
+    <string name="settings_num_queues">Número de colas</string>
+	<string name="accept">Aceptar</string>
+	
+</resources>
