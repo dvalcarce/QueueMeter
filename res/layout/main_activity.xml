@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     tools:context=".IntroActivity" >
 
-    <LinearLayout
-        android:id="@+id/vertical_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <TableLayout
+        android:id="@+id/table"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:orientation="vertical" >
-    </LinearLayout>
+        android:stretchColumns="true"
+        android:layout_margin="20dp">
+    </TableLayout>
 
 </RelativeLayout>
