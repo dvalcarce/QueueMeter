@@ -66,6 +66,7 @@ public class QueueMeterActivity extends Activity {
 	private void reset() {
 		removeButtons();
 		int number = QueueData.getInstance().getNumberInstances();
+		QueueData.deleteInstances();
 		QueueData.createInstances(number);
 		createButtons(number);
 		Toast.makeText(getApplicationContext(), "Reset", Toast.LENGTH_SHORT)
