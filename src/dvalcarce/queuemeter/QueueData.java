@@ -9,7 +9,6 @@ import java.util.List;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.util.Log;
-import android.widget.Toast;
 
 public class QueueData {
 
@@ -104,8 +103,6 @@ public class QueueData {
 	}
 
 	public void arrival(int i, Date date) {
-		Toast.makeText(QueueMeterActivity.getAppContext(),
-				"Arrival at " + (i + 1), Toast.LENGTH_SHORT).show();
 		FileWriter file = arrivalFiles.get(i);
 		try {
 			file.write((date.getTime() + "\n"));
@@ -116,8 +113,6 @@ public class QueueData {
 	}
 
 	public void departure(int i, Date date) {
-		Toast.makeText(QueueMeterActivity.getAppContext(),
-				"Departure at " + (i + 1), Toast.LENGTH_SHORT).show();
 		FileWriter file = departureFiles.get(i);
 		try {
 
