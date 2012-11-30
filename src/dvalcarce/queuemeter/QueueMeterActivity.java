@@ -38,7 +38,6 @@ public class QueueMeterActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_activity, menu);
 		return true;
 	}
@@ -116,7 +115,8 @@ public class QueueMeterActivity extends Activity {
 								Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
-					Log.d("QueueMeterActivity", "Exception: " + e.getMessage() + e);
+					Log.d("QueueMeterActivity", "Exception: " + e.getMessage()
+							+ e);
 					Toast.makeText(getApplicationContext(), "Valor inválido",
 							Toast.LENGTH_SHORT).show();
 				}
@@ -172,12 +172,10 @@ public class QueueMeterActivity extends Activity {
 			});
 
 			TableRow.LayoutParams buttonParams = new TableRow.LayoutParams(
-					ViewGroup.LayoutParams.MATCH_PARENT,
-					ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
-			buttonParams.setMargins(10, 20, 20, 10);
+					ViewGroup.LayoutParams.MATCH_PARENT, 120, 1.0f);
+			buttonParams.setMargins(10, 10, 10, 10);
 			row.addView(arrivalButton, buttonParams);
 			row.addView(departureButton, buttonParams);
-
 			TableRow.LayoutParams rowParams = new TableRow.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 			table.addView(row, rowParams);

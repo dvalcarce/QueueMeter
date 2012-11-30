@@ -3,19 +3,17 @@ package dvalcarce.queuemeter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
 public class QueueData {
 
-	public final static int maxQueues = 5;
+	public final static int maxQueues = 4;
 	private static int queueNumber;
 	private static QueueData instance = null;
 	private List<FileWriter> arrivalFiles;
@@ -28,8 +26,9 @@ public class QueueData {
 		FileWriter arrivalStream, departureStream;
 		QueueData.queueNumber = queueNumber;
 		try {
+			String now = String.valueOf(new Date().getTime());
 			File root = QueueMeterActivity.getAppContext().getExternalFilesDir(
-					null);
+					now);
 
 			Log.d("QueueData", "Creating Quedata(" + queueNumber + ") at "
 					+ root.getPath());
@@ -74,14 +73,7 @@ public class QueueData {
 				file.close();
 
 				MediaScannerConnection.scanFile(activity,
-						new String[] { file.toString() }, null,
-						new MediaScannerConnection.OnScanCompletedListener() {
-							public void onScanCompleted(String path, Uri uri) {
-								Log.v("ExternalStorage", "Scanned " + path
-										+ ":");
-								Log.v("ExternalStorage", "-> uri=" + uri);
-							}
-						});
+						new String[] { file.toString() }, null, null);
 
 			} catch (Exception e) {
 				Log.i("QueueData Exception",
@@ -90,17 +82,11 @@ public class QueueData {
 		}
 		for (FileWriter file : instance.departureFiles) {
 			try {
+				Log.i("QueueData", "Closing " + file);
 				file.flush();
 				file.close();
 				MediaScannerConnection.scanFile(activity,
-						new String[] { file.toString() }, null,
-						new MediaScannerConnection.OnScanCompletedListener() {
-							public void onScanCompleted(String path, Uri uri) {
-								Log.v("ExternalStorage", "Scanned " + path
-										+ ":");
-								Log.v("ExternalStorage", "-> uri=" + uri);
-							}
-						});
+						new String[] { file.toString() }, null, null);
 			} catch (Exception e) {
 				Log.i("QueueData Exception",
 						e.getMessage() + e.toString() + e.getStackTrace());
@@ -122,7 +108,7 @@ public class QueueData {
 				"Arrival at " + (i + 1), Toast.LENGTH_SHORT).show();
 		FileWriter file = arrivalFiles.get(i);
 		try {
-			file.write(date.getTime() + "\n");
+			file.write((date.getTime() + "\n"));
 			file.flush();
 		} catch (Exception e) {
 			Log.d("QueueData", "Exeception Arrival at " + i + e.getMessage());
@@ -134,7 +120,8 @@ public class QueueData {
 				"Departure at " + (i + 1), Toast.LENGTH_SHORT).show();
 		FileWriter file = departureFiles.get(i);
 		try {
-			file.write(date.getTime() + "\n");
+
+			file.write((date.getTime() + "\n"));
 			file.flush();
 		} catch (Exception e) {
 			Log.d("QueueData", "Exception Departure at " + i + e.getMessage());
