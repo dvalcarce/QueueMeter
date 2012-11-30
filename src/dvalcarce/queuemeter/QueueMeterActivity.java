@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +41,13 @@ public class QueueMeterActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_activity, menu);
 		return true;
+	}
+
+	@Override
+	protected void onStop() {
+		removeButtons();
+		QueueData.deleteInstances();
+		super.onStop();
 	}
 
 	@Override
@@ -98,7 +106,7 @@ public class QueueMeterActivity extends Activity {
 						.findViewById(R.id.queuePicker);
 				try {
 					Integer n = Integer.parseInt(text.getText().toString());
-
+					QueueData.deleteInstances();
 					if (QueueData.createInstances(n)) {
 						createButtons(n);
 						dialog.dismiss();
@@ -108,6 +116,7 @@ public class QueueMeterActivity extends Activity {
 								Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
+					Log.d("QueueMeterActivity", "Exception: " + e.getMessage() + e);
 					Toast.makeText(getApplicationContext(), "Valor inválido",
 							Toast.LENGTH_SHORT).show();
 				}
@@ -128,8 +137,6 @@ public class QueueMeterActivity extends Activity {
 			row.removeAllViews();
 		}
 		table.removeAllViews();
-		Toast.makeText(getApplicationContext(), "All data cleared",
-				Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -146,19 +153,19 @@ public class QueueMeterActivity extends Activity {
 			// Row
 			TableRow row = new TableRow(this);
 
-			// inButton
-			Button inButton = new Button(this);
-			inButton.setText("IN " + (i + 1));
-			inButton.setOnClickListener(new View.OnClickListener() {
+			// arrivalButton
+			Button arrivalButton = new Button(this);
+			arrivalButton.setText("IN " + (i + 1));
+			arrivalButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					QueueData.getInstance().arrival(j, new Date());
 				}
 			});
 
-			// outButton
-			Button outButton = new Button(this);
-			outButton.setText("OUT " + (i + 1));
-			outButton.setOnClickListener(new View.OnClickListener() {
+			// departureButton
+			Button departureButton = new Button(this);
+			departureButton.setText("OUT " + (i + 1));
+			departureButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					QueueData.getInstance().departure(j, new Date());
 				}
@@ -168,8 +175,8 @@ public class QueueMeterActivity extends Activity {
 					ViewGroup.LayoutParams.MATCH_PARENT,
 					ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
 			buttonParams.setMargins(10, 20, 20, 10);
-			row.addView(inButton, buttonParams);
-			row.addView(outButton, buttonParams);
+			row.addView(arrivalButton, buttonParams);
+			row.addView(departureButton, buttonParams);
 
 			TableRow.LayoutParams rowParams = new TableRow.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
