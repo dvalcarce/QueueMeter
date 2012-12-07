@@ -140,7 +140,7 @@ public class QueueMeterActivity extends Activity {
 	}
 
 	/**
-	 * Creates a pair of buttons (IN and OUT) for each queue
+	 * Creates three buttons (IN, SERVICE and OUT) for each queue
 	 * 
 	 * @param n
 	 *            number of button pairs
@@ -158,7 +158,18 @@ public class QueueMeterActivity extends Activity {
 			arrivalButton.setText("IN " + (i + 1));
 			arrivalButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					QueueData.getInstance().arrival(j, new Date());
+					QueueData.getInstance().notice(QueueType.ARRIVAL, j,
+							new Date());
+				}
+			});
+
+			// serviceButton
+			Button serviceButton = new Button(this);
+			serviceButton.setText("SERVICE " + (i + 1));
+			serviceButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					QueueData.getInstance().notice(QueueType.SERVICE, j,
+							new Date());
 				}
 			});
 
@@ -167,7 +178,8 @@ public class QueueMeterActivity extends Activity {
 			departureButton.setText("OUT " + (i + 1));
 			departureButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					QueueData.getInstance().departure(j, new Date());
+					QueueData.getInstance().notice(QueueType.DEPARTURE, j,
+							new Date());
 				}
 			});
 
@@ -175,6 +187,7 @@ public class QueueMeterActivity extends Activity {
 					ViewGroup.LayoutParams.MATCH_PARENT, 120, 1.0f);
 			buttonParams.setMargins(10, 10, 10, 10);
 			row.addView(arrivalButton, buttonParams);
+			row.addView(serviceButton, buttonParams);
 			row.addView(departureButton, buttonParams);
 			TableRow.LayoutParams rowParams = new TableRow.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);

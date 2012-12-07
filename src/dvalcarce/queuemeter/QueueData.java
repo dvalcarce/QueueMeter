@@ -10,19 +10,23 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.util.Log;
 
+enum QueueType {
+	ARRIVAL, SERVICE, DEPARTURE;
+}
+
 public class QueueData {
 
 	public final static int maxQueues = 4;
 	private static int queueNumber;
 	private static QueueData instance = null;
-	private List<FileWriter> arrivalFiles;
-	private List<FileWriter> departureFiles;
+	private List<FileWriter> arrivalFiles, serviceFiles, departureFiles;
 
 	private QueueData(int queueNumber) {
 		arrivalFiles = new ArrayList<FileWriter>();
+		serviceFiles = new ArrayList<FileWriter>();
 		departureFiles = new ArrayList<FileWriter>();
-		File arrivalFile, departureFile;
-		FileWriter arrivalStream, departureStream;
+		File arrivalFile, serviceFile, departureFile;
+		FileWriter arrivalStream, serviceStream, departureStream;
 		QueueData.queueNumber = queueNumber;
 		try {
 			String now = String.valueOf(new Date().getTime());
@@ -34,12 +38,15 @@ public class QueueData {
 
 			for (int i = 0; i < queueNumber; i++) {
 				arrivalFile = new File(root, "arrival " + i + ".txt");
+				serviceFile = new File(root, "service " + i + ".txt");
 				departureFile = new File(root, "departure " + i + ".txt");
 
 				arrivalStream = new FileWriter(arrivalFile, true);
+				serviceStream = new FileWriter(serviceFile, true);
 				departureStream = new FileWriter(departureFile, true);
 
 				arrivalFiles.add(arrivalStream);
+				serviceFiles.add(serviceStream);
 				departureFiles.add(departureStream);
 			}
 		} catch (Exception e) {
@@ -59,38 +66,33 @@ public class QueueData {
 		return true;
 	}
 
-	public static void deleteInstances() {
+	private static void safeClose(List<FileWriter> files) {
 		Context activity = QueueMeterActivity.getAppContext();
 
+		for (FileWriter file : files) {
+			try {
+				Log.i("QueueData", "Closing " + file);
+				file.flush();
+				file.close();
+
+				MediaScannerConnection.scanFile(activity,
+						new String[] { file.toString() }, null, null);
+
+			} catch (Exception e) {
+				Log.i("QueueData Exception",
+						e.getMessage() + e.toString() + e.getStackTrace());
+			}
+		}
+	}
+
+	public static void deleteInstances() {
 		if (instance == null) {
 			return;
 		}
-		for (FileWriter file : instance.arrivalFiles) {
-			try {
-				Log.i("QueueData", "Closing " + file);
-				file.flush();
-				file.close();
+		safeClose(instance.arrivalFiles);
+		safeClose(instance.serviceFiles);
+		safeClose(instance.departureFiles);
 
-				MediaScannerConnection.scanFile(activity,
-						new String[] { file.toString() }, null, null);
-
-			} catch (Exception e) {
-				Log.i("QueueData Exception",
-						e.getMessage() + e.toString() + e.getStackTrace());
-			}
-		}
-		for (FileWriter file : instance.departureFiles) {
-			try {
-				Log.i("QueueData", "Closing " + file);
-				file.flush();
-				file.close();
-				MediaScannerConnection.scanFile(activity,
-						new String[] { file.toString() }, null, null);
-			} catch (Exception e) {
-				Log.i("QueueData Exception",
-						e.getMessage() + e.toString() + e.getStackTrace());
-			}
-		}
 		instance = null;
 	}
 
@@ -102,6 +104,31 @@ public class QueueData {
 		return QueueData.queueNumber;
 	}
 
+	public void notice(QueueType type, int i, Date date) {
+		FileWriter file;
+		switch (type) {
+		case ARRIVAL:
+			file = arrivalFiles.get(i);
+			break;
+		case SERVICE:
+			file = serviceFiles.get(i);
+			break;
+		case DEPARTURE:
+			file = departureFiles.get(i);
+			break;
+		default:
+			throw new IllegalArgumentException("Bad QueueType");
+		}
+
+		try {
+			file.write((date.getTime() + "\n"));
+			file.flush();
+		} catch (Exception e) {
+			Log.d("QueueData",
+					"Exeception " + type + " at " + i + e.getMessage());
+		}
+	}
+
 	public void arrival(int i, Date date) {
 		FileWriter file = arrivalFiles.get(i);
 		try {
@@ -109,6 +136,17 @@ public class QueueData {
 			file.flush();
 		} catch (Exception e) {
 			Log.d("QueueData", "Exeception Arrival at " + i + e.getMessage());
+		}
+	}
+
+	public void service(int i, Date date) {
+		FileWriter file = serviceFiles.get(i);
+		try {
+
+			file.write((date.getTime() + "\n"));
+			file.flush();
+		} catch (Exception e) {
+			Log.d("QueueData", "Exception Service at " + i + e.getMessage());
 		}
 	}
 
